@@ -2,97 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TRUE608 INTELLIGENCE - BLACK HOLE DESIGN SYSTEM */
-/* Military-Grade Security meets Bloomberg Terminal Intelligence */
+/* TRUE608 INTELLIGENCE - ENTERPRISE COMPLIANCE PLATFORM */
+/* Professional. Authoritative. Secure. */
 
 @layer base {
   :root {
-    /* VOID - The Abyss */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* BACKGROUND - Deep Matte Charcoal */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
 
-    /* CONTAINMENT - Borders & Structure */
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 100%;
+    /* CARDS - Slightly Lighter */
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
 
-    /* RADIOACTIVE - Safe Status */
-    --primary: 132 100% 50%;
-    --primary-foreground: 0 0% 0%;
+    /* PRIMARY - Status Blue */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    /* SECONDARY - Muted Elements */
-    --secondary: 0 0% 10%;
+    /* SECONDARY - Muted Surface */
+    --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 70%;
 
-    /* MUTED - Scan Lines & Overlays */
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 50%;
+    /* MUTED */
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
 
-    /* ACCENT - Highlight */
-    --accent: 132 100% 50%;
-    --accent-foreground: 0 0% 0%;
+    /* ACCENT - Success Green */
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
 
-    /* DEFCON RED - Danger / Liability */
-    --destructive: 0 100% 50%;
+    /* DESTRUCTIVE - Clean Red */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    /* BORDERS - High Contrast */
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 132 100% 50%;
+    /* BORDERS - Subtle Gray */
+    --border: 0 0% 18%;
+    --input: 0 0% 14%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.25rem;
-
-    /* CUSTOM COLORS */
-    --void: 0 0% 0%;
-    --terminal: 0 0% 8%;
-    --grid-line: 0 0% 12%;
-    --radioactive: 132 100% 50%;
-    --defcon: 0 100% 50%;
-    --warning: 45 100% 50%;
-    --signal: 200 100% 50%;
+    --radius: 0.375rem;
 
     /* SIDEBAR */
-    --sidebar-background: 0 0% 3%;
+    --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 0 0% 80%;
-    --sidebar-primary: 132 100% 50%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 10%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 132 100% 50%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 217 91% 60%;
+
+    /* STATUS COLORS */
+    --status-blue: 217 91% 60%;
+    --status-green: 160 84% 39%;
+    --status-red: 0 72% 51%;
+    --status-yellow: 45 93% 47%;
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 3%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 132 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 10%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 70%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 50%;
-    --accent: 132 100% 50%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 100% 50%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 132 100% 50%;
-    --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 0 0% 80%;
-    --sidebar-primary: 132 100% 50%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 132 100% 50%;
+    --border: 0 0% 18%;
+    --input: 0 0% 14%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -102,112 +91,25 @@
   }
 
   body {
-    @apply bg-background text-foreground font-mono antialiased;
-  }
-
-  /* SCANLINES - CRT EFFECT */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9999;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 65, 0.015) 2px,
-      rgba(0, 255, 65, 0.015) 4px
-    );
-    animation: scanlines 0.1s linear infinite;
-  }
-
-  @keyframes scanlines {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(4px); }
-  }
-
-  /* CRT FLICKER */
-  body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9998;
-    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+    @apply bg-background text-foreground font-sans antialiased;
   }
 }
 
 @layer utilities {
-  /* GLITCH EFFECT */
-  .glitch {
-    animation: glitch 0.3s infinite;
+  /* Status indicator dots */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
   }
 
-  @keyframes glitch {
-    0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ff41; }
-    25% { text-shadow: -2px 0 #ff0000, 2px 0 #00ff41; }
-    50% { text-shadow: 2px 2px #ff0000, -2px -2px #00ff41; }
-    75% { text-shadow: -2px -2px #ff0000, 2px 2px #00ff41; }
-    100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ff41; }
+  .status-dot-active {
+    @apply bg-accent;
   }
 
-  /* PULSE GLOW */
-  .glow-radioactive {
-    box-shadow: 0 0 20px hsl(var(--radioactive) / 0.5),
-                0 0 40px hsl(var(--radioactive) / 0.3),
-                0 0 60px hsl(var(--radioactive) / 0.1);
+  .status-dot-warning {
+    @apply bg-yellow-500;
   }
 
-  .glow-defcon {
-    box-shadow: 0 0 20px hsl(var(--defcon) / 0.5),
-                0 0 40px hsl(var(--defcon) / 0.3),
-                0 0 60px hsl(var(--defcon) / 0.1);
-  }
-
-  .text-glow-radioactive {
-    text-shadow: 0 0 10px hsl(var(--radioactive)),
-                 0 0 20px hsl(var(--radioactive) / 0.5),
-                 0 0 30px hsl(var(--radioactive) / 0.3);
-  }
-
-  .text-glow-defcon {
-    text-shadow: 0 0 10px hsl(var(--defcon)),
-                 0 0 20px hsl(var(--defcon) / 0.5),
-                 0 0 30px hsl(var(--defcon) / 0.3);
-  }
-
-  /* TERMINAL CURSOR */
-  .cursor-blink::after {
-    content: '█';
-    animation: blink 1s step-end infinite;
-  }
-
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
-
-  /* GRID PATTERN */
-  .terminal-grid {
-    background-image: 
-      linear-gradient(hsl(var(--grid-line)) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--grid-line)) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  /* NUMBER COUNTER ANIMATION */
-  @keyframes countUp {
-    from { opacity: 0.7; }
-    to { opacity: 1; }
-  }
-
-  .animate-count {
-    animation: countUp 0.1s ease-out;
+  .status-dot-error {
+    @apply bg-destructive;
   }
 }
