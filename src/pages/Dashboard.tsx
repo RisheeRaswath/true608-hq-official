@@ -57,7 +57,7 @@ const Dashboard = () => {
                 Adjust width (w-32) as needed to fit your logo.
             */}
             <img 
-              src="/lovable-uploads/logo.png" 
+              src="/logo.png" 
               alt="True608 Intelligence" 
               className="h-8 w-auto object-contain"
             />
