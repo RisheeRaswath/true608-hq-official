@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ShieldCheck, Lock, Zap, MessageSquare, AlertTriangle, LogOut, User } from "lucide-react";
+import { Shield, Clock, FileText, ChevronRight, LogOut, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -17,7 +17,6 @@ const Dashboard = () => {
       if (!session) {
         navigate("/auth");
       } else {
-        // Personalization: Take the name before the '@'
         const email = session.user.email;
         setUserEmail(email?.split('@')[0].toUpperCase() || "TECHNICIAN");
         setLoading(false);
@@ -34,89 +33,110 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center">
-        <div className="text-red-500 font-mono animate-pulse uppercase tracking-widest">
-          Initializing Secure Session...
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="text-slate-400 font-medium tracking-tight">Accessing Vault...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 font-sans selection:bg-red-500/30">
-      {/* Top Navigation */}
-      <nav className="border-b border-slate-800 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-100">
+      {/* High-Authority Top Navigation */}
+      <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-red-900/20">608</div>
-            <span className="font-bold tracking-tighter text-xl">TRUE<span className="text-red-500">608</span></span>
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 bg-blue-600 rounded flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-tighter">608</div>
+            <span className="font-bold tracking-tight text-lg text-slate-900">TRUE<span className="text-blue-600">608</span></span>
           </div>
-          <div className="flex items-center gap-4">
-             <div className="hidden md:flex items-center gap-2 text-xs font-mono text-slate-500">
-              <User className="w-3 h-3" />
-              <span>{userEmail}@TRUE608.SECURE</span>
-            </div>
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Log Out
+          <div className="flex items-center gap-6">
+            <span className="hidden md:block text-[11px] font-bold text-slate-400 uppercase tracking-widest border-r border-slate-200 pr-6">
+              Authenticated: {userEmail}
+            </span>
+            <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900 font-medium" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" /> Sign Out
             </Button>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        {/* Header HUD */}
-        <div className="mb-12 border-l-4 border-red-600 pl-6 py-2">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-2">
-            Welcome, <span className="text-red-500">{userEmail}</span>
+      <main className="max-w-6xl mx-auto px-6 py-16">
+        {/* Welcome Header */}
+        <div className="max-w-2xl mb-16">
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-4">
+            Welcome, {userEmail}.
           </h1>
-          <p className="text-slate-400 font-mono text-sm uppercase tracking-widest">
-            Protocol Status: <span className="text-green-500 animate-pulse">Priority-1 Queue Active</span>
+          <p className="text-lg text-slate-600 leading-relaxed">
+            Your firm is now registered for the 2026 HFC reporting cycle. 
+            The True608 Intelligence engine is currently calibrating for your specific inventory requirements.
           </p>
         </div>
 
-        {/* The Grid of Hope */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-xl">
-            <Lock className="w-8 h-8 text-red-500 mb-4" />
-            <h3 className="font-bold mb-2">Vault Security</h3>
-            <p className="text-sm text-slate-400">Your cylinder data will be secured with AES-256 encryption. We handle the technical load; you handle the business.</p>
+        {/* The Priority Cards */}
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          <div className="group bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors">
+              <Shield className="w-5 h-5 text-blue-600 group-hover:text-white" />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-900 underline decoration-blue-500/30">Priority-1 Queue Active</h3>
+            <p className="text-slate-500 leading-relaxed mb-6">
+              You are among the first firms authorized to use The Shield's automated compliance layer. 
+              Full system activation is scheduled for January 1st, 2026.
+            </p>
+            <div className="flex items-center text-sm font-bold text-blue-600 tracking-tight cursor-default uppercase">
+              Status: Verified <ChevronRight className="w-4 h-4 ml-1" />
+            </div>
           </div>
 
-          <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-xl">
-            <ShieldCheck className="w-8 h-8 text-red-500 mb-4" />
-            <h3 className="font-bold mb-2">EPA Part 84</h3>
-            <p className="text-sm text-slate-400">HFC Allowance tracking activates on January 1st. Your firm is registered for the automated reporting cycle.</p>
-          </div>
-
-          <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-xl">
-            <Zap className="w-8 h-8 text-red-500 mb-4" />
-            <h3 className="font-bold mb-2">The Shield Engine</h3>
-            <p className="text-sm text-slate-400">Eliminating the 4-6 hours/month of manual compliance labor. You fix the units; we fix the paperwork.</p>
+          <div className="group bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300">
+            <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center mb-6 group-hover:bg-slate-900 transition-colors">
+              <Clock className="w-5 h-5 text-slate-600 group-hover:text-white" />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-900 underline decoration-slate-500/30">The Roadmap</h3>
+            <p className="text-slate-500 leading-relaxed mb-6">
+              Our specialists are currently finalizing the 40 CFR Part 84 reporting logic. 
+              You will receive a sequence of briefings over the next 10 days to prepare your fleet.
+            </p>
+            <div className="flex items-center text-sm font-bold text-slate-400 tracking-tight cursor-default uppercase">
+              Next Briefing: Dec 24 <ChevronRight className="w-4 h-4 ml-1" />
+            </div>
           </div>
         </div>
 
-        {/* System Briefing Section */}
-        <section className="bg-red-950/10 border border-red-900/20 rounded-2xl p-8 mb-12">
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <AlertTriangle className="text-red-500" /> SYSTEM BRIEFING: JAN 1ST LAUNCH
-          </h2>
-          <div className="space-y-4 text-slate-300">
-            <p>True608 Intelligence is currently in <strong>Final Calibration</strong>. We are building the most secure refrigerant tracking engine in the industry.</p>
-            <p><strong>Check your inbox:</strong> A Welcome Briefing has been dispatched. It contains the technical roadmap and how we protect your business from the $44,539/day liability risk.</p>
+        {/* The Action/Hope Area */}
+        <div className="bg-slate-900 text-white rounded-3xl p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden relative shadow-2xl">
+          <div className="relative z-10 max-w-lg">
+            <div className="inline-flex items-center gap-2 bg-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">
+              Secure Transmission
+            </div>
+            <h2 className="text-3xl font-bold mb-6 tracking-tight">Prepare your 2026 Compliance Strategy.</h2>
+            <p className="text-slate-400 leading-relaxed mb-8">
+              While the Shield engine initializes, ensure your technicians have reviewed the Manual Survival Protocol. 
+              This document outlines the liability risks you've already mitigated by joining True608.
+            </p>
+            <Button 
+              className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-6 h-auto font-bold rounded-xl flex items-center gap-2"
+              onClick={() => window.open('/blueprint.pdf', '_blank')}
+            >
+              <FileText className="w-5 h-5" /> Download Survival Protocol
+            </Button>
           </div>
-        </section>
+          <div className="w-full md:w-1/3 aspect-square border border-slate-800 rounded-2xl flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
+            <div className="text-center">
+              <p className="text-slate-500 font-mono text-[10px] uppercase mb-2">Internal Encryption Key</p>
+              <p className="text-blue-500 font-mono text-xs">TRU-608-AUTH-SECURE</p>
+            </div>
+          </div>
+        </div>
 
-        {/* Contact/Support */}
-        <div className="text-center bg-slate-900/20 py-12 rounded-2xl border border-dashed border-slate-800">
-          <MessageSquare className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-          <h2 className="text-xl font-bold mb-2">Questions for HQ?</h2>
-          <p className="text-slate-400 mb-6 font-mono text-sm">SECURE COMMS: HQ@TRUE608.COM</p>
-          <Button 
-            className="bg-red-600 hover:bg-red-700 text-white px-8"
-            onClick={() => window.location.href = 'mailto:hq@true608.com'}
-          >
-            MESSAGE THE FOUNDER
-          </Button>
+        <div className="mt-16 text-center">
+          <p className="text-slate-400 text-sm mb-6">Confidentiality Notice: Information on this dashboard is for authorized True608 Intelligence personnel only.</p>
+          <button className="text-xs font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors flex items-center justify-center mx-auto gap-2" onClick={() => window.location.href = 'mailto:hq@true608.com'}>
+            Technical Support <ExternalLink className="w-3 h-3" />
+          </button>
         </div>
       </main>
     </div>
