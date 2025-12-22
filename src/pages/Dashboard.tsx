@@ -37,6 +37,22 @@ const Dashboard = () => {
     navigate("/");
   };
 
+  const handleDownloadProtocol = () => {
+    // THE SURGICAL STRIKE: Filename must be 100% identical to the file in your public folder
+    const link = document.createElement('a');
+    link.href = '/TRUE608_SURVIVAL_PROTOCOL.pdf'; 
+    link.target = '_blank';
+    link.download = 'TRUE608_SURVIVAL_PROTOCOL.pdf'; 
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "ENCRYPTION BYPASSED",
+      description: "Survival Protocol is now downloading to your local drive.",
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -57,6 +73,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-600/30">
+      {/* NAVIGATION HUD */}
       <nav className="border-b border-white/10 bg-black sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <img src="/logo.png" alt="TRUE608" className="h-7 w-auto object-contain" />
@@ -77,6 +94,7 @@ const Dashboard = () => {
       </nav>
 
       <main className="max-w-6xl mx-auto px-6 py-12">
+        {/* COMMANDER GREETING */}
         <div className="mb-16 border-l-8 border-blue-600 pl-8">
           <div className="flex items-center gap-2 text-blue-500 mb-3">
             <Activity className="w-4 h-4" />
@@ -88,6 +106,7 @@ const Dashboard = () => {
           <p className="text-white/30 font-mono text-xs uppercase tracking-widest">Global Encryption Node: TRUE-608-INTEL-2026</p>
         </div>
 
+        {/* TACTICAL METRICS */}
         <div className="grid md:grid-cols-4 gap-4 mb-16">
           {[
             { label: "FEDERAL RISK", val: "$44,539", sub: "DAILY LIABILITY", icon: ShieldAlert, color: "text-red-600" },
@@ -108,6 +127,7 @@ const Dashboard = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {/* OPERATION ROADMAP */}
           <div className="md:col-span-2 bg-white/[0.02] border border-white/10 p-10">
             <h2 className="text-2xl font-black mb-12 flex items-center gap-3 uppercase tracking-tighter border-b border-white/5 pb-6">
               <Clock className="w-6 h-6 text-blue-600" /> OPERATION ROADMAP
@@ -129,6 +149,7 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* FOUNDER CONTACT */}
           <div className="flex flex-col gap-6">
             <div className="bg-white/[0.02] border border-white/10 p-8 flex flex-col justify-between border-t-8 border-blue-600 shadow-2xl">
               <div>
@@ -153,6 +174,7 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* THE SURVIVAL PROTOCOL DOWNLOAD SECTION (FIXED) */}
         <div className="bg-white/[0.03] border border-white/10 p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden group hover:border-blue-600/50 transition-all">
           <div className="relative z-10 max-w-xl">
             <h2 className="text-5xl font-black mb-6 tracking-tighter uppercase leading-[0.9] text-white">ACCESS THE SURVIVAL PROTOCOL.</h2>
@@ -161,22 +183,23 @@ const Dashboard = () => {
             </p>
             <Button 
               className="bg-blue-600 text-white hover:bg-blue-700 px-12 py-8 h-auto font-black rounded-none flex items-center gap-4 text-xl tracking-tighter transition-all active:scale-95 shadow-lg shadow-blue-600/20"
-              onClick={() => window.open('/TRUE608_TIER2_PROTOCOL.pdf', '_blank')}
+              onClick={handleDownloadProtocol}
             >
               <FileText className="w-8 h-8" /> DOWNLOAD PROTOCOL
             </Button>
           </div>
-          {/* THE FIX: Changed 'hidden flex' to 'hidden lg:flex' to solve the Tailwind conflict */}
+          
           <div className="hidden lg:flex w-72 h-72 border-[16px] border-white/5 items-center justify-center bg-black">
-               <div className="text-center">
-                 <p className="text-[10px] font-mono text-white/10 uppercase mb-2 font-bold tracking-[0.3em]">SESSION HASH</p>
-                 <p className="text-blue-600 font-mono text-xs font-black uppercase tracking-tighter px-4 break-all">
-                    TRU-{Math.random().toString(36).substring(7).toUpperCase()}
-                 </p>
-               </div>
+              <div className="text-center">
+                <p className="text-[10px] font-mono text-white/10 uppercase mb-2 font-bold tracking-[0.3em]">SESSION HASH</p>
+                <p className="text-blue-600 font-mono text-xs font-black uppercase tracking-tighter px-4 break-all">
+                  TRU-{Math.random().toString(36).substring(7).toUpperCase()}
+                </p>
+              </div>
           </div>
         </div>
 
+        {/* FOOTER */}
         <footer className="mt-24 pt-12 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[11px] font-black uppercase tracking-[0.4em] text-white/20">
             <div className="flex gap-12">
