@@ -191,7 +191,7 @@ const Dashboard = () => {
           
           <div className="hidden lg:flex w-72 h-72 border-[16px] border-white/5 items-center justify-center bg-black">
               <div className="text-center">
-                <p className="text-[10px] font-mono text-white/10 uppercase mb-2 font-bold tracking-[0.3em]">SESSION HASH</p>
+                <p className="text-[10px] font-mono text-zinc-400 uppercase mb-2 font-bold tracking-[0.4em]">SESSION HASH</p>
                 <p className="text-blue-600 font-mono text-xs font-black uppercase tracking-tighter px-4 break-all">
                   TRU-{Math.random().toString(36).substring(7).toUpperCase()}
                 </p>
