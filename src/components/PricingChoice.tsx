@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const PricingSection = () => {
-  // COUNTDOWN LOGIC: The Doomsday Clock
+  // COUNTDOWN LOGIC: The Jan 01, 2026 Doomsday Clock
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -86,30 +86,30 @@ const PricingSection = () => {
   ];
 
   return (
-    <section className="bg-slate-900 py-24 text-white font-sans">
+    <section id="pricing" className="bg-black py-24 text-white font-sans">
       <div className="max-w-7xl mx-auto px-6 text-center">
         
-        {/* LIVE DOOMSDAY BANNER */}
-        <div className="inline-block bg-red-900/20 border border-red-500/50 rounded-2xl px-8 py-4 mb-12 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-          <p className="text-red-500 font-black text-xs tracking-widest uppercase mb-2">
+        {/* LIVE DOOMSDAY BANNER - PURE BLACK THEME */}
+        <div className="inline-block bg-red-950/20 border border-red-500/30 rounded-2xl px-8 py-4 mb-12 shadow-[0_0_30px_rgba(239,68,68,0.1)]">
+          <p className="text-red-500 font-black text-xs tracking-widest uppercase mb-3">
             ⚠️ PHASE 1 PRICE LOCKDOWN EXPIRING IN:
           </p>
           <div className="flex gap-4 justify-center items-center font-mono text-3xl md:text-4xl font-black text-white">
-            <div>{timeLeft.days}<span className="text-xs text-red-500 block uppercase font-bold">Days</span></div>
-            <div className="pb-4">:</div>
-            <div>{timeLeft.hours}<span className="text-xs text-red-500 block uppercase font-bold">Hrs</span></div>
-            <div className="pb-4">:</div>
-            <div>{timeLeft.minutes}<span className="text-xs text-red-500 block uppercase font-bold">Min</span></div>
-            <div className="pb-4">:</div>
-            <div className="text-red-500">{timeLeft.seconds}<span className="text-xs text-red-500 block uppercase font-bold font-sans">Sec</span></div>
+            <div>{timeLeft.days}<span className="text-[10px] text-red-500 block uppercase font-bold font-sans mt-1">Days</span></div>
+            <div className="pb-5 text-zinc-700">:</div>
+            <div>{timeLeft.hours}<span className="text-[10px] text-red-500 block uppercase font-bold font-sans mt-1">Hrs</span></div>
+            <div className="pb-5 text-zinc-700">:</div>
+            <div>{timeLeft.minutes}<span className="text-[10px] text-red-500 block uppercase font-bold font-sans mt-1">Min</span></div>
+            <div className="pb-5 text-zinc-700">:</div>
+            <div>{timeLeft.seconds}<span className="text-[10px] text-red-500 block uppercase font-bold font-sans mt-1">Sec</span></div>
           </div>
         </div>
 
-        <h2 className="text-5xl font-extrabold mb-4 text-blue-400 tracking-tight">
+        <h2 className="text-5xl font-extrabold mb-4 text-blue-500 tracking-tight">
           FEDERAL COMPLIANCE PRICING
         </h2>
-        <p className="text-xl mb-16 text-slate-300 max-w-2xl mx-auto">
-          Secure your HFC allocation tracking before the <span className="text-white font-bold underline decoration-blue-500">Jan 01, 2026</span> mandate.
+        <p className="text-xl mb-16 text-zinc-400 max-w-2xl mx-auto">
+          Secure your HFC allocation tracking before the <span className="text-white font-bold underline underline-offset-4 decoration-blue-500">Jan 01, 2026</span> mandate.
         </p>
         
         <div className="grid md:grid-cols-3 gap-8 items-center">
@@ -118,8 +118,8 @@ const PricingSection = () => {
               key={tier.name}
               className={`relative p-8 rounded-3xl border-2 transition-all duration-300 ${
                 tier.highlight 
-                ? 'border-blue-500 bg-slate-800 scale-105 shadow-[0_0_50px_-12px_rgba(59,130,246,0.5)] z-10' 
-                : 'border-slate-800 bg-slate-900 opacity-90 hover:opacity-100'
+                ? 'border-blue-500 bg-zinc-900 scale-105 shadow-[0_0_60px_-15px_rgba(59,130,246,0.3)] z-10' 
+                : 'border-zinc-800 bg-black opacity-90 hover:opacity-100'
               }`}
             >
               {tier.highlight && (
@@ -129,17 +129,17 @@ const PricingSection = () => {
               )}
 
               <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
-              <p className="text-slate-400 text-sm mb-6 h-10">{tier.description}</p>
+              <p className="text-zinc-500 text-sm mb-6 h-10">{tier.description}</p>
               
               <div className="text-6xl font-black mb-8">
-                <span className="text-2xl align-top text-slate-500">$</span>
+                <span className="text-2xl align-top text-zinc-600">$</span>
                 {tier.price}
-                <span className="text-base font-medium text-slate-500 tracking-normal">/yr</span>
+                <span className="text-base font-medium text-zinc-600 tracking-normal">/yr</span>
               </div>
 
               <ul className="text-left mb-10 space-y-4">
                 {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start text-sm text-slate-200">
+                  <li key={feature} className="flex items-start text-sm text-zinc-300">
                     <span className="text-blue-500 mr-3 mt-1 font-bold">✓</span> {feature}
                   </li>
                 ))}
@@ -149,8 +149,8 @@ const PricingSection = () => {
                 onClick={() => handleSecureSlot(tier.name)}
                 className={`w-full py-4 rounded-2xl font-black text-lg transition-all duration-200 active:scale-95 ${
                   tier.highlight 
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20' 
-                  : 'bg-slate-700 hover:bg-slate-600 text-slate-100'
+                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/40' 
+                  : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100'
                 }`}
               >
                 {tier.cta}
@@ -159,13 +159,13 @@ const PricingSection = () => {
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-slate-500 text-sm italic">
-            * All pricing in USD. Payments processed via Secure US ACH or Domestic Wire only.
+        <div className="mt-20 pt-10 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-zinc-600 text-sm italic">
+            * All pricing in USD. Payments processed via Secure US ACH or Domestic Wire.
           </p>
           <div className="flex gap-4">
-            <span className="bg-slate-800 px-3 py-1 rounded text-[10px] text-slate-400 font-mono tracking-tighter">EPA 40 CFR 84 COMPLIANT</span>
-            <span className="bg-slate-800 px-3 py-1 rounded text-[10px] text-slate-400 font-mono tracking-tighter">ENCRYPTED DATA LOGGING</span>
+            <span className="bg-zinc-900 px-3 py-1 rounded text-[10px] text-zinc-500 font-mono tracking-tighter">EPA 40 CFR 84 COMPLIANT</span>
+            <span className="bg-zinc-900 px-3 py-1 rounded text-[10px] text-zinc-500 font-mono tracking-tighter">ENCRYPTED DATA LOGGING</span>
           </div>
         </div>
       </div>
