@@ -1,4 +1,4 @@
-import { Shield, CheckCircle2, ArrowRight } from "lucide-react";
+import { Shield, Zap, Lock, CheckCircle2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PricingSection = () => {
@@ -43,45 +43,45 @@ const PricingSection = () => {
   ];
 
   return (
-    <section id="investment-tiers" className="bg-black py-32 px-6 border-t border-white/5">
-      <div className="max-w-6xl mx-auto text-center mb-24">
-        <h2 className="text-6xl font-black tracking-tighter text-white mb-6 uppercase leading-none">
+    <section className="bg-black py-24 px-6 border-t border-white/5">
+      <div className="max-w-6xl mx-auto text-center mb-20">
+        <h2 className="text-5xl font-black tracking-tighter text-white mb-6 uppercase">
           SECURE YOUR ALLOWANCE.
         </h2>
-        <p className="text-blue-600 font-mono font-black uppercase tracking-[0.4em] text-xs">
-          Jan 1st Compliance Activation - NYC Fleet Priority
+        <p className="text-white/40 font-bold uppercase tracking-widest text-sm">
+          Jan 1st Compliance Activation - Limited Founding Member Slots Remaining
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-8">
         {tiers.map((tier, i) => (
           <div 
             key={i} 
-            className={`p-12 border transition-all relative flex flex-col justify-between ${
+            className={`p-10 border transition-all relative overflow-hidden flex flex-col justify-between ${
               tier.premium 
-              ? 'border-blue-600 bg-blue-600/5 shadow-[0_0_50px_rgba(37,99,235,0.1)] scale-105 z-10' 
-              : 'border-white/10 bg-white/[0.01]'
+              ? 'border-blue-600 bg-blue-600/5 shadow-2xl shadow-blue-600/10 scale-105 z-10' 
+              : 'border-white/10 bg-white/[0.02] hover:border-white/30'
             }`}
           >
             {tier.premium && (
-              <div className="absolute top-0 right-0 bg-blue-600 text-white text-[9px] font-black px-4 py-1.5 tracking-[0.2em] uppercase">
+              <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-black px-4 py-1 tracking-widest">
                 RECOMMENDED FOR NYC FLEETS
               </div>
             )}
             
             <div>
-              <h3 className="text-3xl font-black text-white mb-3 uppercase tracking-tighter italic">
+              <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">
                 {tier.name}
               </h3>
-              <p className="text-white/30 text-[10px] font-black uppercase mb-10 tracking-widest leading-relaxed">
+              <p className="text-white/40 text-xs font-bold uppercase mb-8 leading-relaxed">
                 {tier.desc}
               </p>
               
-              <ul className="space-y-5 mb-16">
+              <ul className="space-y-4 mb-12">
                 {tier.features.map((feature, fIndex) => (
-                  <li key={fIndex} className="flex items-start gap-4">
-                    <CheckCircle2 className={`w-4 h-4 mt-0.5 shrink-0 ${tier.premium ? 'text-blue-500' : 'text-white/10'}`} />
-                    <span className="text-[11px] font-bold text-white/50 uppercase tracking-tight text-left leading-tight">
+                  <li key={fIndex} className="flex items-start gap-3">
+                    <CheckCircle2 className={`w-4 h-4 mt-0.5 ${tier.premium ? 'text-blue-500' : 'text-white/20'}`} />
+                    <span className="text-xs font-bold text-white/60 uppercase tracking-tight text-left">
                       {feature}
                     </span>
                   </li>
@@ -90,14 +90,14 @@ const PricingSection = () => {
             </div>
 
             <Button 
-              className={`w-full h-16 rounded-none font-black tracking-widest uppercase flex items-center justify-center gap-3 transition-all text-sm ${
+              className={`w-full h-14 rounded-none font-black tracking-tighter uppercase flex items-center justify-center gap-2 transition-all ${
                 tier.premium 
                 ? 'bg-blue-600 text-white hover:bg-white hover:text-black' 
                 : 'bg-white/5 text-white hover:bg-white hover:text-black border border-white/10'
               }`}
               onClick={() => window.location.href = 'mailto:rishee@true608.com'}
             >
-              {tier.cta} <ArrowRight className="w-5 h-5" />
+              {tier.cta} <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         ))}

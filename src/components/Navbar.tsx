@@ -1,56 +1,93 @@
-import { LogOut } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { LogIn, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// 1. THE BYPASS: We add '?' to make these props optional
-interface NavbarProps {
-  userEmail?: string | null;
-  handleLogout?: () => void;
-}
+const Navbar = () => {
+  const location = useLocation();
 
-// 2. THE DEFAULT VALUES: If no data comes in, we assume "Guest Mode"
-const Navbar = ({ userEmail = null, handleLogout = () => {} }: NavbarProps) => {
-  
-  const scrollToPricing = () => {
-    const element = document.getElementById('investment-tiers');
+  const handleLogoClick = () => {
+    if (location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  // THE TARGETING COMPUTER (Preserved your superior offset logic)
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const offset = 80; // Keeps the title visible below the sticky header
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    } else if (location.pathname !== "/") {
+      // If they are on the Login page, this sends them Home -> Pricing
+      window.location.href = `/#${sectionId}`;
     }
   };
 
   return (
-    <nav className="border-b border-white/10 bg-black sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <img src="/logo.png" alt="TRUE608" className="h-7 w-auto object-contain" />
+    <header className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2">
         
-        <div className="flex items-center gap-8">
-          <button 
-            onClick={scrollToPricing}
-            className="hidden md:block text-[10px] font-mono text-white/40 hover:text-blue-600 uppercase tracking-[0.3em] transition-all cursor-pointer font-black"
-          >
-            INVESTMENT TIERS
-          </button>
-
-          {/* LOGIC: Only show Access ID if a user actually exists */}
-          <span className="hidden lg:block text-[10px] font-mono text-white/20 uppercase tracking-[0.3em]">
-            ACCESS ID: {userEmail ? `${userEmail}@608.SECURE` : "GUEST.NODE"}
+        {/* BRAND IDENTITY */}
+        <Link 
+          to="/" 
+          onClick={handleLogoClick}
+          className="flex items-center gap-2 sm:gap-3 shrink-0 cursor-pointer hover:opacity-80 transition-opacity group"
+        >
+          <img 
+            src="/logo.png" 
+            alt="True608 HQ" 
+            className="h-7 w-auto sm:h-9 object-contain group-hover:scale-105 transition-transform" 
+          />
+          <span className="text-lg sm:text-xl font-bold text-white tracking-tight leading-none">
+            True608
           </span>
-          
-          {/* LOGIC: Only show Logout if a user exists. Otherwise show Login? 
-              For now, we keep it simple to fix the build. */}
-          {userEmail && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              // 3. THE CSS FIX: Removed 'hover:text-white' to stop the conflict. Kept Blue.
-              className="text-white/40 hover:text-blue-600 hover:bg-blue-600/20 font-bold tracking-tighter" 
-              onClick={handleLogout}
+        </Link>
+
+        {/* NAVIGATION HUD */}
+        <div className="flex items-center gap-2 sm:gap-6">
+          <nav className="hidden md:flex items-center gap-6 mr-4">
+            
+            {/* EXISTING LINKS */}
+            <button onClick={() => scrollToSection("liability-audit")} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Liability Audit</button>
+            <button onClick={() => scrollToSection("compliance-manual")} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Manual</button>
+            
+            {/* NEW TARGETING LINK: INVESTMENT TIERS */}
+            {/* This connects directly to the Pricing Section ID we set earlier */}
+            <button 
+              onClick={() => scrollToSection("investment-tiers")} 
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              <LogOut className="w-4 h-4 mr-2" /> TERMINATE
+              Investment Tiers
+            </button>
+          </nav>
+
+          {/* AUTHENTICATION GATES */}
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground px-2 sm:px-3 text-xs sm:text-sm">
+              <Link to="/auth">
+                <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                Login
+              </Link>
             </Button>
-          )}
+            <Button size="sm" asChild className="bg-primary hover:bg-primary/90 px-2 sm:px-4 text-xs sm:text-sm font-bold">
+              <Link to="/auth?signup=true">
+                <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Get Protected</span>
+                <span className="xs:hidden">Join</span>
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 
