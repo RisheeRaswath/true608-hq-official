@@ -67,6 +67,34 @@ const Index = () => {
           </div>
         </section>
 
+        {/* PHASE 2.5: THE SOVEREIGN PORTAL */}
+        <section className="bg-zinc-950 py-20 border-b border-white/5">
+          <div className="container mx-auto px-6 text-center">
+            <div className="max-w-3xl mx-auto border border-[#FF4F00]/30 bg-[#FF4F00]/5 p-12 rounded-sm">
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-6 tracking-tighter uppercase">
+                Ready to Secure Your Inventory?
+              </h2>
+              <p className="text-slate-400 mb-10 text-lg">
+                Authorized NYC Mechanical Firms only. Access the 40 CFR Part 84 
+                encrypted vault and initialize industrial field scanning.
+              </p>
+              
+              {/* THE MAGIC LINK */}
+              <a 
+                href="/app/index.html" 
+                className="inline-block bg-[#FF4F00] hover:bg-[#E65100] text-white font-black px-12 py-5 text-xl uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 shadow-[0_10px_40px_rgba(255,79,0,0.3)]"
+              >
+                ENTER PRIVATE VAULT
+              </a>
+              
+              <div className="mt-8 flex justify-center gap-6 opacity-30">
+                <span className="text-[10px] font-mono text-white tracking-widest">AES-256_ENCRYPTED</span>
+                <span className="text-[10px] font-mono text-white tracking-widest">OFFICIAL_GOV_STANDARDS</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
         {/* PHASE 3: THE CALCULATION OF DEBT */}
         <RiskCalculator />
 

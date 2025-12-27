@@ -62,17 +62,18 @@ const Navbar = () => {
 
           <div className="flex items-center gap-1.5 sm:gap-3">
             <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground px-2 sm:px-3 text-xs sm:text-sm">
-              <Link to="/auth">
+              <a href="./app/index.html">
                 <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Login
-              </Link>
+              </a>
             </Button>
+
             <Button size="sm" asChild className="bg-primary hover:bg-primary/90 px-2 sm:px-4 text-xs sm:text-sm font-bold">
-              <Link to="/auth?signup=true">
+              <a href="./app/index.html">
                 <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 <span className="hidden xs:inline">Get Protected</span>
                 <span className="xs:hidden">Join</span>
-              </Link>
+              </a>
             </Button>
           </div>
         </div>

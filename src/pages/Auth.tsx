@@ -19,11 +19,12 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/dashboard");
+        // THE NUCLEAR REDIRECT: Bypass React Router and force the subfolder
+        window.location.replace("/app/dashboard");
       }
     });
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,14 +36,15 @@ const Auth = () => {
         if (error) throw error;
         if (data.user && data.session) {
             toast({ title: "IDENTITY VERIFIED", description: "ACCESS GRANTED. ENTERING MISSION CONTROL..." });
-            navigate("/dashboard");
+            window.location.replace("/app/dashboard");
         } else {
             toast({ title: "PROTOCOL INITIATED", description: "CHECK YOUR EMAIL TO VERIFY SYSTEM ACCESS." });
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate("/dashboard");
+        // THE NUCLEAR REDIRECT: Prevents jumping back to the HQ Marketing site
+        window.location.replace("/app/dashboard");
       }
     } catch (error: any) {
       toast({ title: "SECURITY ALERT", description: error.message.toUpperCase(), variant: "destructive" });
@@ -59,7 +61,7 @@ const Auth = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/")}
+            onClick={() => window.location.href = "/"} 
             className="text-zinc-600 hover:text-[#2563EB] hover:bg-zinc-900 rounded-none font-black tracking-widest text-[10px]"
           >
             <ArrowLeft className="w-3 h-3 mr-2" />
