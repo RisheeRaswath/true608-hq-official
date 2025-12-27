@@ -5,11 +5,11 @@
       "destination": "/app/assets/:path*"
     },
     {
-      "source": "/app/(.*)",
+      "source": "/app/:path*",
       "destination": "/app/index.html"
     },
     {
-      "source": "/((?!app|assets|api|favicon.png).*)",
+      "source": "/((?!app|assets|api|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]
