@@ -5,7 +5,7 @@
       "destination": "/app/assets/:path*"
     },
     {
-      "source": "/app/:path*",
+      "source": "/app/(.*)",
       "destination": "/app/index.html"
     }
   ]
