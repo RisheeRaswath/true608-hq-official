@@ -8,13 +8,5 @@
       "source": "/app/(.*)",
       "destination": "/app/index.html"
     }
-  ],
-  "headers": [
-    {
-      "source": "/app/assets/(.*).js",
-      "headers": [
-        { "key": "Content-Type", "value": "application/javascript" }
-      ]
-    }
   ]
 }
