@@ -56,6 +56,9 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
   const [logs, setLogs] = useState<ComplianceLog[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Check if user is super_admin (bypasses company_id restrictions)
+  const isSuperAdmin = role?.toLowerCase() === 'super_admin' || role?.toLowerCase() === 'superadmin';
 
   useEffect(() => {
     fetchData();
@@ -65,7 +68,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
     setIsLoading(true);
 
     // Fetch compliance logs
-    const { data: logsData, error: logsError } = await supabase
+    const { data: logsData, error: logsError } = await (supabase as any)
       .from('compliance_logs')
       .select('*')
       .order('logged_at', { ascending: false })
@@ -76,7 +79,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
     }
 
     // Fetch assets
-    const { data: assetsData, error: assetsError } = await supabase
+    const { data: assetsData, error: assetsError } = await (supabase as any)
       .from('assets')
       .select('*')
       .order('created_at', { ascending: false });
@@ -104,15 +107,165 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
   const riskCount = logs.filter(l => getLogStatus(l) === "risk").length;
   const totalCharged = logs.reduce((sum, l) => sum + (l.delta_lbs || (l.start_weight_lbs - l.end_weight_lbs)), 0);
 
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = async () => {
     setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
+    
+    try {
+      // Fetch comprehensive data with joins
+      const { data: logsData, error: logsError } = await (supabase as any)
+        .from('compliance_logs')
+        .select(`
+          *,
+          cylinders (
+            qr_code_id,
+            refrigerant_type,
+            asset_id,
+            assets (
+              name,
+              location
+            )
+          ),
+          profiles:tech_id (
+            full_name,
+            email,
+            company_id,
+            epa_cert_number
+          )
+        `)
+        .order('logged_at', { ascending: false });
+
+      if (logsError) {
+        console.error('Error fetching logs:', logsError);
+        throw logsError;
+      }
+
+      // Fetch company data if available
+      // SUPER ADMIN: Bypass company_id restrictions - can see all companies
+      let companyData: { id: string; name: string; logo_url?: string } | null = null;
+      if (user) {
+        try {
+          const { data: userProfile } = await (supabase as any)
+            .from('profiles')
+            .select('company_id, full_name')
+            .eq('id', user.id)
+            .single();
+
+          // SUPER ADMIN: Use "True608 Intelligence" as company name (oversees all)
+          if (isSuperAdmin) {
+            companyData = {
+              id: 'super_admin',
+              name: 'True608 Intelligence',
+              logo_url: undefined
+            };
+          } else if (userProfile?.company_id) {
+            // Try to fetch company details (companies table may or may not exist)
+            try {
+              const { data: company } = await (supabase as any)
+                .from('companies')
+                .select('*')
+                .eq('id', userProfile.company_id)
+                .single();
+              
+              if (company) {
+                companyData = {
+                  id: company.id,
+                  name: company.name || userProfile.full_name || 'Company',
+                  logo_url: company.logo_url
+                };
+              }
+            } catch (companyError) {
+              // Companies table doesn't exist or error - use profile name
+              companyData = {
+                id: user.id,
+                name: userProfile.full_name || user.email?.split('@')[0] || 'Company',
+                logo_url: undefined
+              };
+            }
+          } else {
+            // No company_id, use profile name
+            companyData = {
+              id: user.id,
+              name: userProfile?.full_name || user.email?.split('@')[0] || 'Company',
+              logo_url: undefined
+            };
+          }
+        } catch (profileError) {
+          // Fallback to user email
+          companyData = {
+            id: user.id,
+            name: user.email?.split('@')[0] || 'Company',
+            logo_url: undefined
+          };
+        }
+      }
+
+      // Transform data for PDF
+      const pdfLogs = (logsData || []).map((log: any) => ({
+        id: log.id,
+        logged_at: log.logged_at,
+        tech_id: log.tech_id,
+        tech_name: log.profiles?.full_name || log.profiles?.email || 'Unknown',
+        tech_epa_cert: log.profiles?.epa_cert_number || 'N/A',
+        cylinder_id: log.cylinder_id,
+        cylinder_serial: log.cylinders?.qr_code_id,
+        asset_id: log.cylinders?.asset_id,
+        asset_serial: log.cylinders?.assets?.name,
+        gas_type: log.cylinders?.refrigerant_type,
+        start_weight_lbs: log.start_weight_lbs,
+        start_weight_oz: log.start_weight_oz || 0,
+        end_weight_lbs: log.end_weight_lbs,
+        end_weight_oz: log.end_weight_oz || 0,
+        delta_lbs: log.delta_lbs || (log.start_weight_lbs - log.end_weight_lbs),
+        gps_latitude: log.gps_latitude,
+        gps_longitude: log.gps_longitude,
+        location_gps: log.gps_latitude && log.gps_longitude 
+          ? `${log.gps_latitude.toFixed(4)}, ${log.gps_longitude.toFixed(4)}`
+          : null
+      }));
+
+      // Calculate summary
+      const totalRecovered = pdfLogs
+        .filter((l: any) => l.delta_lbs < 0)
+        .reduce((sum: number, l: any) => sum + Math.abs(l.delta_lbs), 0);
+      
+      const totalCharged = pdfLogs
+        .filter((l: any) => l.delta_lbs > 0)
+        .reduce((sum: number, l: any) => sum + l.delta_lbs, 0);
+
+      const summary = {
+        totalRecovered,
+        totalCharged,
+        totalLogs: pdfLogs.length
+      };
+
+      // Generate PDF
+      const { generateComplianceBinderPDF } = await import('@/utils/pdfGenerator');
+      const pdfBlob = await generateComplianceBinderPDF(pdfLogs, companyData, summary);
+
+      // Download
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `True608_Federal_Compliance_Binder_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
       toast({
         title: "EPA Audit Binder Generated",
         description: "Download ready with federal citations and company branding",
       });
-    }, 2500);
+    } catch (error: any) {
+      console.error('PDF generation error:', error);
+      toast({
+        title: "PDF Generation Failed",
+        description: error.message || "Please ensure jspdf and jspdf-autotable are installed",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSignOut = async () => {
@@ -133,16 +286,16 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
               {onBack && (
                 <button
                   onClick={onBack}
-                  className="px-3 py-2 bg-secondary border border-border rounded text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-3 py-2 bg-card border border-border rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:border-[#F97316]/50 transition-colors font-sans"
                 >
                   ← Back
                 </button>
               )}
               <div>
-                <h1 className="text-xl md:text-2xl font-bold text-foreground">
-                  <span className="text-primary">TRUE608</span> CONTROL TOWER
+                <h1 className="text-xl md:text-2xl font-black tracking-wide font-sans">
+                  <span className="text-white">True608</span> <span className="text-[#F97316]">CONTROL TOWER</span>
                 </h1>
-                <p className="text-sm text-muted-foreground">Federal Compliance Vault</p>
+                <p className="text-sm text-zinc-400 font-light">Federal Compliance Vault</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -157,15 +310,13 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
                   ENTER FIELD MODE
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={handleSignOut}
-                className="text-muted-foreground hover:text-foreground"
+                className="px-3 py-2 bg-card border border-border rounded text-sm font-medium text-muted-foreground hover:bg-[#F97316] hover:text-black hover:border-[#F97316] transition-colors font-sans flex items-center gap-2"
               >
-                <LogOut className="w-4 h-4 mr-2" />
+                <LogOut className="w-4 h-4" />
                 <span className="hidden md:inline">Sign Out</span>
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -200,8 +351,8 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
 
           <div className="card-industrial p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded bg-primary/20">
-                <Thermometer className="w-5 h-5 text-primary" />
+              <div className="p-2 rounded bg-[#F97316]/20">
+                <Thermometer className="w-5 h-5 text-[#F97316]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{totalCharged.toFixed(1)}</p>
@@ -225,9 +376,9 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
 
         {/* Generate PDF Button */}
         <Button
-          variant="action"
+          variant="default"
           size="lg"
-          className="w-full md:w-auto"
+          className="w-full md:w-auto bg-[#F97316] hover:bg-[#F97316]/90 text-black font-black"
           onClick={handleGeneratePDF}
           disabled={isGenerating}
         >
@@ -263,7 +414,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
             onClick={() => setActiveTab("fleet")}
             className={`px-4 py-3 font-bold text-sm uppercase tracking-wider transition-colors border-b-2 -mb-[2px] ${
               activeTab === "fleet"
-                ? "border-primary text-primary"
+                ? "border-[#F97316] text-[#F97316]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -274,7 +425,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
             onClick={() => setActiveTab("logs")}
             className={`px-4 py-3 font-bold text-sm uppercase tracking-wider transition-colors border-b-2 -mb-[2px] ${
               activeTab === "logs"
-                ? "border-primary text-primary"
+                ? "border-[#F97316] text-[#F97316]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -299,7 +450,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
               assets.map((asset) => (
                 <div
                   key={asset.id}
-                  className="card-industrial p-4 hover:border-primary/30 transition-colors cursor-pointer"
+                  className="card-industrial p-4 hover:border-[#F97316]/30 transition-colors cursor-pointer"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -353,7 +504,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="font-mono text-sm text-primary">
+                          <span className="font-mono text-sm text-[#F97316]">
                             {log.cylinder_id ? log.cylinder_id.slice(0, 8) : 'N/A'}
                           </span>
                           <StatusBadge status={status} size="sm" />
@@ -367,7 +518,7 @@ const ControlTower = ({ onBack, onEnterFieldMode }: ControlTowerProps) => {
                             <Clock className="w-3 h-3" />
                             <span>{new Date(log.logged_at).toLocaleDateString()}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-primary font-bold">
+                          <div className="flex items-center gap-1 text-[#F97316] font-bold">
                             <span>{delta.toFixed(1)} LBS</span>
                           </div>
                           <div className="flex items-center gap-2">

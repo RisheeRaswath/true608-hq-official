@@ -20,24 +20,34 @@ const WeightIncrement = ({ value, onChange, onConfirm }: WeightIncrementProps) =
 
   return (
     <div className="space-y-4">
-      {/* Increment Buttons Grid */}
-      <div className="grid grid-cols-3 gap-3">
-        {/* Positive increments */}
+      {/* Increment Buttons Grid - 2 columns on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 gap-y-6">
+        {/* Row 1: +10.0 | +5.0 */}
         <button
           type="button"
           onClick={() => handleIncrement(10)}
           className="weight-btn-positive"
         >
           <Plus className="w-5 h-5 mr-1" />
-          10.0
+          + 10.0
         </button>
+        <button
+          type="button"
+          onClick={() => handleIncrement(5)}
+          className="weight-btn-positive"
+        >
+          <Plus className="w-5 h-5 mr-1" />
+          + 5.0
+        </button>
+        
+        {/* Row 2: +1.0 | +0.1 */}
         <button
           type="button"
           onClick={() => handleIncrement(1)}
           className="weight-btn-positive"
         >
           <Plus className="w-5 h-5 mr-1" />
-          1.0
+          + 1.0
         </button>
         <button
           type="button"
@@ -45,25 +55,35 @@ const WeightIncrement = ({ value, onChange, onConfirm }: WeightIncrementProps) =
           className="weight-btn-positive"
         >
           <Plus className="w-5 h-5 mr-1" />
-          0.1
+          + 0.1
         </button>
         
-        {/* Negative increments */}
+        {/* Row 3: -10.0 | -5.0 */}
         <button
           type="button"
           onClick={() => handleIncrement(-10)}
           className="weight-btn-negative"
         >
           <Minus className="w-5 h-5 mr-1" />
-          10.0
+          – 10.0
         </button>
+        <button
+          type="button"
+          onClick={() => handleIncrement(-5)}
+          className="weight-btn-negative"
+        >
+          <Minus className="w-5 h-5 mr-1" />
+          – 5.0
+        </button>
+        
+        {/* Row 4: -1.0 | -0.1 */}
         <button
           type="button"
           onClick={() => handleIncrement(-1)}
           className="weight-btn-negative"
         >
           <Minus className="w-5 h-5 mr-1" />
-          1.0
+          – 1.0
         </button>
         <button
           type="button"
@@ -71,7 +91,7 @@ const WeightIncrement = ({ value, onChange, onConfirm }: WeightIncrementProps) =
           className="weight-btn-negative"
         >
           <Minus className="w-5 h-5 mr-1" />
-          0.1
+          – 0.1
         </button>
       </div>
 
@@ -80,14 +100,14 @@ const WeightIncrement = ({ value, onChange, onConfirm }: WeightIncrementProps) =
         <button
           type="button"
           onClick={handleClear}
-          className="weight-btn text-muted-foreground"
+          className="weight-btn border-zinc-700 text-zinc-400 h-16"
         >
           CLEAR
         </button>
         <button
           type="button"
           onClick={onConfirm}
-          className="weight-btn bg-primary text-primary-foreground border-primary hover:brightness-95"
+          className="relative w-full h-16 bg-[#F97316] border-2 border-[#F97316] rounded-none text-black font-black text-sm uppercase tracking-widest flex items-center justify-center py-4"
         >
           CONFIRM
         </button>

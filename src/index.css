@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -71,6 +73,65 @@
   .font-mono-data {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-feature-settings: "tnum" on, "lnum" on;
+  }
+
+  /* INDUSTRIAL LOVABLE STYLING */
+  .card-industrial {
+    @apply bg-zinc-950 border border-zinc-900 rounded-none;
+  }
+
+  .scan-button {
+    @apply relative w-full h-32 md:h-40 bg-[#F97316] border-2 border-[#F97316] rounded-none;
+    @apply text-black font-black text-lg md:text-xl uppercase tracking-widest;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .weight-display {
+    @apply text-6xl md:text-7xl font-black text-[#F97316] font-mono;
+    @apply tracking-tighter leading-none;
+  }
+
+  .weight-btn {
+    @apply px-6 py-4 bg-zinc-950 border-2 rounded-none;
+    @apply font-black uppercase tracking-wider text-sm h-16;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  @keyframes scale-in {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out;
+  }
+
+  .weight-btn-positive {
+    @apply weight-btn border-[#22C55E] text-[#22C55E];
+  }
+
+  .weight-btn-negative {
+    @apply weight-btn border-[#EF4444] text-[#EF4444];
+  }
+
+  .badge-audit-ready {
+    @apply inline-flex items-center gap-1 px-3 py-1 bg-green-600/20 border border-green-600/50;
+    @apply text-green-400 font-black uppercase tracking-wider text-xs;
+  }
+
+  .badge-risk {
+    @apply inline-flex items-center gap-1 px-3 py-1 bg-red-600/20 border border-red-600/50;
+    @apply text-red-400 font-black uppercase tracking-wider text-xs;
   }
 }
 

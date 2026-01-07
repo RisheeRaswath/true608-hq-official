@@ -18,8 +18,7 @@ const HeroSection = () => {
           asChild
           className="bg-[#FF4F00] hover:bg-[#E65100] text-white text-lg px-8 py-8 font-black uppercase tracking-widest shadow-[0_20px_50px_rgba(255,79,0,0.3)] transition-all transform hover:-translate-y-1"
         >
-          {/* Welded gateway into the orange Tactical realm */}
-          <a href="/#/app">
+          <a href="/app">
             Initialize Federal Compliance Scan
             <Lock className="w-5 h-5 ml-2" />
           </a>

@@ -25,7 +25,7 @@ const Navbar = () => {
         behavior: "smooth"
       });
     } else if (location.pathname !== "/") {
-      window.location.href = `/#${sectionId}`;
+      window.location.href = `/${sectionId}`;
     }
   };
 
@@ -39,11 +39,11 @@ const Navbar = () => {
           className="flex items-center gap-2 sm:gap-3 shrink-0 cursor-pointer hover:opacity-80 transition-opacity group"
         >
           <img 
-            src="/logo.png" 
-            alt="True608 HQ" 
-            className="h-7 w-auto sm:h-9 object-contain group-hover:scale-105 transition-transform" 
+            src="/logo-shield.PNG" 
+            alt="True608" 
+            className="h-10 w-auto object-contain group-hover:scale-105 transition-transform" 
           />
-          <span className="text-lg sm:text-xl font-bold text-white tracking-tight leading-none">
+          <span className="text-lg sm:text-xl font-black text-white tracking-tight leading-none">
             True608
           </span>
         </Link>
@@ -67,8 +67,7 @@ const Navbar = () => {
               asChild
               className="text-muted-foreground hover:text-foreground px-2 sm:px-3 text-xs sm:text-sm"
             >
-              {/* Hard-link into the orange app realm */}
-              <a href="/#/app">
+              <a href="/app">
                 <LogIn className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Login
               </a>
@@ -79,8 +78,7 @@ const Navbar = () => {
               asChild
               className="bg-primary hover:bg-primary/90 px-2 sm:px-4 text-xs sm:text-sm font-bold"
             >
-              {/* Welded gateway: ensure Join routes to /#/app */}
-              <a href="/#/app">
+              <a href="/app">
                 <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 <span className="hidden xs:inline">Get Protected</span>
                 <span className="xs:hidden">Join</span>

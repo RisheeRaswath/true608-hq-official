@@ -35,22 +35,25 @@ export const useAuth = () => {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // THE FIX: We cast supabase to 'any' to bypass the "user_roles" type error
+      // Fetch role from profiles table - always fetch latest to ensure session sync
       const { data, error } = await (supabase as any)
-        .from('user_roles')
+        .from('profiles')
         .select('role')
-        .eq('user_id', userId)
+        .eq('id', userId)
         .single();
 
       if (error) throw error;
       
-      // THE FIX: Use optional chaining (?.) to prevent 'null' errors
-      if (data) {
-        setRole(data.role);
+      // Set role if found, otherwise default to 'technician' for security
+      if (data && data.role) {
+        const normalizedRole = (data.role as string).toLowerCase();
+        setRole(normalizedRole);
+      } else {
+        setRole('technician'); // Default to most restrictive role
       }
     } catch (err) {
       console.error("Role fetch error:", err);
-      setRole('user'); // Default fallback
+      setRole('technician'); // Default to most restrictive role for security
     }
   };
 

@@ -58,15 +58,13 @@ const Auth = () => {
       {/* TACTICAL HEADER */}
       <header className="border-b border-zinc-900 bg-black/80 backdrop-blur-md">
         <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.location.href = "/#/"} 
-            className="text-zinc-600 hover:text-[#2563EB] hover:bg-zinc-900 rounded-none font-black tracking-widest text-[10px]"
+          <button
+            onClick={() => window.location.href = "/"} 
+            className="px-3 py-2 bg-card border border-[#F97316] rounded text-sm font-medium text-[#F97316] hover:bg-[#F97316] hover:text-black hover:border-[#F97316] transition-colors font-sans flex items-center gap-2"
           >
-            <ArrowLeft className="w-3 h-3 mr-2" />
+            <ArrowLeft className="w-4 h-4" />
             RETURN TO HQ
-          </Button>
+          </button>
         </div>
       </header>
 

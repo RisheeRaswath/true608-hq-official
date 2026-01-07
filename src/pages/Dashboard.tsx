@@ -1,147 +1,281 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, LogOut, Activity, Wrench, Radar } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Wrench, Radar, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import FieldShield from "@/components/FieldShield";
 import ControlTower from "@/components/ControlTower";
 
-type ViewMode = "tower" | "field";
+type ViewMode = "selection" | "field" | "tower";
 
 const Dashboard = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>("tower");
+  const [viewMode, setViewMode] = useState<ViewMode>("selection");
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [showOverride, setShowOverride] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    let isMounted = true;
+    let overrideTimeoutId: NodeJS.Timeout;
 
-      if (!session) {
-        // Weld users back to the orange Auth gate if no session
-        window.location.replace("/#/app");
-      } else {
+    // Show override button after 3 seconds
+    overrideTimeoutId = setTimeout(() => {
+      if (isMounted && loading) {
+        setShowOverride(true);
+      }
+    }, 3000);
+
+    const checkUserAndRole = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          clearTimeout(overrideTimeoutId);
+          window.location.replace("/app");
+          return;
+        }
+
         setUserEmail(session.user.email?.split("@")[0].toUpperCase() || "OPERATOR");
-        setLoading(false);
+
+        const { data: profile, error } = await (supabase as any)
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        clearTimeout(overrideTimeoutId);
+
+        if (error) {
+          console.error("Profile fetch error:", error);
+          const role = (profile?.role || 'tech') as string;
+          const normalizedRole = role.toLowerCase();
+          if (normalizedRole !== 'super_admin' && normalizedRole !== 'superadmin') {
+            window.location.replace("/app/field-shield/scan");
+          } else {
+            if (isMounted) {
+              setUserRole(normalizedRole);
+              setLoading(false);
+            }
+          }
+          return;
+        }
+
+        if (!profile) {
+          window.location.replace("/app/field-shield/scan");
+          return;
+        }
+
+        const role = (profile.role || 'tech') as string;
+        const normalizedRole = role.toLowerCase();
+
+        // CRITICAL: super_admin ALWAYS gets dashboard access - NO REDIRECTS
+        if (normalizedRole === 'super_admin' || normalizedRole === 'superadmin') {
+          if (isMounted) {
+            setUserRole(normalizedRole);
+            setLoading(false);
+          }
+          return;
+        }
+
+        // If tech/technician, redirect to scan page
+        if (normalizedRole === 'tech' || normalizedRole === 'technician') {
+          window.location.replace("/app/field-shield/scan");
+          return;
+        }
+
+        // admin and ceo can access dashboard
+        const allowedRoles = ['admin', 'ceo'];
+        if (allowedRoles.includes(normalizedRole)) {
+          if (isMounted) {
+            setUserRole(normalizedRole);
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Unknown role - redirect to scan
+        window.location.replace("/app/field-shield/scan");
+      } catch (err) {
+        console.error("Auth check error:", err);
+        clearTimeout(overrideTimeoutId);
+        if (userRole === 'super_admin' || userRole === 'superadmin') {
+          if (isMounted) {
+            setLoading(false);
+          }
+        } else {
+          window.location.replace("/app");
+        }
       }
     };
 
-    checkUser();
+    checkUserAndRole();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(overrideTimeoutId);
+    };
   }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({ title: "TERMINATED", description: "Secure session ended." });
-    window.location.replace("/#/");
+    window.location.replace("/");
   };
 
+  const handleOverride = () => {
+    window.location.replace('/app/dashboard');
+  };
+
+  // Show professional loading state with override button
   if (loading) {
-    return <div className="min-h-screen bg-[#F97316] selection:bg-black/20" />;
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center relative">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-[#F97316] animate-spin" />
+          <p className="text-[#F97316] font-black tracking-wide uppercase text-sm">INITIALIZING CONTROL TOWER...</p>
+        </div>
+        
+        {showOverride && (
+          <div className="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-50 p-8">
+            <button
+              onClick={handleOverride}
+              className="bg-[#FF8C00] hover:bg-[#FF8C00]/90 text-black font-black text-2xl uppercase tracking-widest py-6 px-12 rounded-none border-4 border-black shadow-2xl transition-all hover:scale-105 active:scale-100"
+            >
+              OVERRIDE: ENTER CONTROL TOWER
+            </button>
+            <p className="text-white text-sm mt-4 opacity-75">Database response delayed. Force entry activated.</p>
+          </div>
+        )}
+      </div>
+    );
   }
 
+  // super_admin, admin, and ceo can access dashboard - NO REDIRECTS
+  const allowedRoles = ['admin', 'ceo', 'super_admin', 'superadmin'];
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-[#F97316] animate-spin" />
+          <p className="text-[#F97316] font-black tracking-wide uppercase text-sm">VERIFYING ACCESS...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show selection cards
+  if (viewMode === "selection") {
+    return (
+      <div className="min-h-screen bg-black text-white font-sans selection:bg-[#F97316]/30">
+        {/* FEDERAL COMPLIANCE VAULT HEADER */}
+        <nav className="border-b border-white/10 bg-black p-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/logo-shield.PNG" 
+              alt="True608" 
+              className="h-10 w-auto object-contain" 
+            />
+            <h1 className="text-xl font-black tracking-wide text-white">True608 FEDERAL COMPLIANCE VAULT</h1>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="px-3 py-2 bg-card border border-border rounded text-sm font-medium text-muted-foreground hover:bg-[#F97316] hover:text-black hover:border-[#F97316] transition-colors font-sans"
+          >
+            EXIT VAULT
+          </button>
+        </nav>
+
+        {/* SELECTION CARDS */}
+        <main className="max-w-6xl mx-auto px-6 py-12">
+          <div className="mb-12 border-l-8 border-[#F97316] pl-8">
+            <p className="text-[#F97316] text-[10px] font-black uppercase tracking-[0.4em] mb-2">System Status: Active</p>
+            <h1 className="text-5xl font-black tracking-wide uppercase">OPERATOR: {userEmail}</h1>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* FIELD-SHIELD CARD */}
+            <button
+              onClick={() => setViewMode("field")}
+              className="bg-zinc-950 border-2 border-[#F97316]/30 hover:border-[#F97316] p-12 text-left transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 bg-[#F97316]/20 border-2 border-[#F97316]/40">
+                  <Wrench className="w-12 h-12 text-[#F97316]" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black tracking-wide uppercase text-white group-hover:text-[#F97316] transition-colors">
+                    FIELD-SHIELD
+                  </h2>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-[0.4em] font-bold mt-1">
+                    Mobile Compliance Scanner
+                  </p>
+                </div>
+              </div>
+              <p className="text-zinc-400 text-sm">
+                Log refrigerant usage in the field with GPS coordinates, timestamps, and scale photos. Federal compliance logging for technicians.
+              </p>
+            </button>
+
+            {/* CONTROL TOWER CARD */}
+            <button
+              onClick={() => setViewMode("tower")}
+              className="bg-zinc-950 border-2 border-[#F97316]/30 hover:border-[#F97316] p-12 text-left transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-4 bg-[#F97316]/20 border-2 border-[#F97316]/40">
+                  <Radar className="w-12 h-12 text-[#F97316]" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black tracking-wide uppercase text-white group-hover:text-[#F97316] transition-colors">
+                    CONTROL TOWER
+                  </h2>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-[0.4em] font-bold mt-1">
+                    Fleet Intelligence Hub
+                  </p>
+                </div>
+              </div>
+              <p className="text-zinc-400 text-sm">
+                View compliance logs, fleet assets, generate EPA audit binders, and monitor federal compliance status across your entire operation.
+              </p>
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Show FieldShield or ControlTower based on selection
   return (
-    <div className="min-h-screen bg-[#F97316] text-black font-sans selection:bg-black/20">
-      {/* ORANGE REALM NAVIGATION */}
-      <nav className="border-b border-black/20 bg-[#F97316]/95 backdrop-blur-sm p-4 flex justify-between items-center">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-[#F97316]/30">
+      <nav className="border-b border-white/10 bg-black p-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <div className="p-2 border border-black/40 bg-black/10">
-            <Shield className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-[11px] font-black tracking-[0.3em] uppercase">True608 Tactical Vault</p>
-            <h1 className="text-xl font-black tracking-tight uppercase">
-              OPERATOR: <span className="underline decoration-black/60">{userEmail}</span>
-            </h1>
-          </div>
+          <img 
+            src="/logo-shield.PNG" 
+            alt="True608" 
+            className="h-8 w-auto object-contain" 
+          />
+          <h1 className="text-xl font-black tracking-wide text-white">True608 FEDERAL COMPLIANCE VAULT</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "tower" ? "default" : "outline"}
-            size="sm"
-            className="rounded-none border-black/40 bg-black text-[#F97316] hover:bg-black/90"
-            onClick={() => setViewMode("tower")}
+          <button
+            onClick={() => setViewMode("selection")}
+            className="px-3 py-2 bg-card border border-border rounded text-sm font-medium text-muted-foreground hover:text-foreground hover:border-[#F97316]/50 transition-colors font-sans"
           >
-            <Radar className="w-4 h-4 mr-1" />
-            CONTROL TOWER
-          </Button>
-          <Button
-            variant={viewMode === "field" ? "default" : "outline"}
-            size="sm"
-            className="rounded-none border-black/40 bg-black text-[#F97316] hover:bg-black/90"
-            onClick={() => setViewMode("field")}
-          >
-            <Wrench className="w-4 h-4 mr-1" />
-            FIELD-SHIELD
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
+            ← BACK TO SELECTION
+          </button>
+          <button
             onClick={handleLogout}
-            className="ml-2 text-black hover:text-black hover:bg-black/10 rounded-none font-bold tracking-widest text-[10px]"
+            className="px-3 py-2 bg-card border border-border rounded text-sm font-medium text-muted-foreground hover:bg-[#F97316] hover:text-black hover:border-[#F97316] transition-colors font-sans"
           >
-            <LogOut className="w-4 h-4 mr-2" /> EXIT VAULT
-          </Button>
+            EXIT VAULT
+          </button>
         </div>
       </nav>
 
-      {/* ORANGE REALM BODY */}
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-10 space-y-6">
-        <div className="grid md:grid-cols-3 gap-6 items-stretch">
-          <div className="md:col-span-2">
-            {viewMode === "tower" ? (
-              <div className="bg-black text-[#F97316] border border-black/40 p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <p className="text-[10px] font-black tracking-[0.4em] uppercase text-[#F97316]/70">
-                      CONTROL TOWER ONLINE
-                    </p>
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">
-                      FEDERAL COMPLIANCE STACK
-                    </h2>
-                  </div>
-                  <Activity className="w-10 h-10 text-[#F97316] animate-pulse" />
-                </div>
-                {/* Inject the full ControlTower intelligence view */}
-                <ControlTower
-                  onEnterFieldMode={() => setViewMode("field")}
-                />
-              </div>
-            ) : (
-              <div className="bg-black text-[#F97316] border border-black/40 p-4 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-                <p className="text-[10px] font-black tracking-[0.4em] uppercase text-[#F97316]/70 mb-3">
-                  FIELD MODE: ACTIVE
-                </p>
-                {/* Deploy the FieldShield scanner HUD */}
-                <FieldShield onBack={() => setViewMode("tower")} />
-              </div>
-            )}
-          </div>
-
-          {/* SIDE STATUS COLUMN */}
-          <aside className="space-y-4">
-            <div className="bg-black text-[#F97316] border border-black/40 p-4 md:p-5">
-              <p className="text-[10px] font-black tracking-[0.4em] uppercase text-[#F97316]/70 mb-2">
-                SYSTEM STATUS
-              </p>
-              <p className="text-2xl font-black uppercase leading-tight">EPA AIM ACT 2026</p>
-              <p className="text-xs font-bold uppercase tracking-[0.25em] mt-2 text-[#F97316]/80">
-                40 CFR PART 84 • TRUE608 INTEL
-              </p>
-            </div>
-            <div className="bg-black text-[#F97316] border border-black/40 p-4 md:p-5">
-              <p className="text-[10px] font-black tracking-[0.4em] uppercase text-[#F97316]/70 mb-2">
-                VAULT NOTE
-              </p>
-              <p className="text-xs font-bold uppercase leading-relaxed text-[#F97316]/85">
-                Every logged pound is timestamped and GPS-locked. Treat this view as your last line of defense
-                before an EPA audit.
-              </p>
-            </div>
-          </aside>
-        </div>
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        {viewMode === "field" && <FieldShield onBack={() => setViewMode("selection")} />}
+        {viewMode === "tower" && <ControlTower onBack={() => setViewMode("selection")} />}
       </main>
     </div>
   );
